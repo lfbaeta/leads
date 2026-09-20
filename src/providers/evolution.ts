@@ -41,9 +41,9 @@ export class EvolutionProvider implements WhatsAppProvider{
     if(typeof id!=="string"||!id) throw new Error("Provider não confirmou externalMessageId.");
     return {externalMessageId:id,rawMetadata:{provider:this.name}};
   }
-  async sendImage(){throw new Error("Imagem ainda não habilitada.");}
-  async sendDocument(){throw new Error("Documento ainda não habilitado.");}
-  async sendAudio(){throw new Error("Áudio ainda não habilitado.");}
+  async sendImage(_to:string,_fileRef:string,_caption?:string):Promise<OutboundMessageResult>{throw new Error("Imagem ainda não habilitada.");}
+  async sendDocument(_to:string,_fileRef:string,_caption?:string):Promise<OutboundMessageResult>{throw new Error("Documento ainda não habilitado.");}
+  async sendAudio(_to:string,_fileRef:string):Promise<OutboundMessageResult>{throw new Error("Áudio ainda não habilitado.");}
   async normalizeEvent(payload:unknown):Promise<NormalizedWhatsAppEvent>{
     if(!payload||typeof payload!=="object") throw new Error("Webhook inválido.");
     const p=payload as Record<string,unknown>; const data=(p.data&&typeof p.data==="object"?p.data:{}) as Record<string,unknown>;
@@ -54,6 +54,8 @@ export class EvolutionProvider implements WhatsAppProvider{
     const externalMessageId=typeof key.id==="string"?key.id:undefined;
     const eventRaw=typeof p.event==="string"?p.event:"UNKNOWN";
     const externalEventId=[eventRaw,externalMessageId??"",String(data.messageTimestamp??"")].join(":");
-    return {externalEventId,eventType:eventRaw.toLowerCase().includes("messages.upsert")||eventRaw.toLowerCase().includes("message")?"MESSAGE_RECEIVED":eventRaw,phone:remote.split("@")[0],externalMessageId,payload:{text:text??"",raw:p}};
+    const event:NormalizedWhatsAppEvent={externalEventId,eventType:eventRaw.toLowerCase().includes("messages.upsert")||eventRaw.toLowerCase().includes("message")?"MESSAGE_RECEIVED":eventRaw,payload:{text:text??"",raw:p}};
+    const phone=remote.split("@")[0]; if(phone) event.phone=phone; if(externalMessageId) event.externalMessageId=externalMessageId;
+    return event;
   }
 }
