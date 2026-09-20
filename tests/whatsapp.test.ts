@@ -1,6 +1,6 @@
 import { describe,expect,it } from "vitest";
 import { assertSafeProviderUrl } from "../src/providers/factory.js";
-import { verifyWebhookSecret } from "../src/whatsapp/webhook-service.js";
+import { verifyWebhookSecret } from "../src/whatsapp/webhook-auth.js";
 import { createHash } from "node:crypto";
 describe("WhatsApp",()=>{
  it("rejeita URL com credenciais",()=>expect(()=>assertSafeProviderUrl("https://user:pass@example.com")).toThrow());
