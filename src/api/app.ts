@@ -4,6 +4,18 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { env } from "../config/env.js";
 import { registerHealthRoutes } from "./routes/health.js";
 
+type ErrorWithStatus = Error & {
+  statusCode?: number;
+};
+
+function normalizeError(error: unknown): ErrorWithStatus {
+  if (error instanceof Error) {
+    return error as ErrorWithStatus;
+  }
+
+  return new Error("Erro desconhecido") as ErrorWithStatus;
+}
+
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
     logger: {
@@ -42,22 +54,24 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerHealthRoutes(app);
 
   app.setErrorHandler((error, request, reply) => {
+    const normalizedError = normalizeError(error);
+
     request.log.error(
       {
-        err: error,
+        err: normalizedError,
         requestId: request.id
       },
       "Erro nao tratado na API"
     );
 
-    const statusCode = error.statusCode && error.statusCode >= 400
-      ? error.statusCode
+    const statusCode = normalizedError.statusCode && normalizedError.statusCode >= 400
+      ? normalizedError.statusCode
       : 500;
 
     return reply.code(statusCode).send({
       error: statusCode >= 500
         ? "Ocorreu um erro interno. Tente novamente."
-        : error.message,
+        : normalizedError.message,
       requestId: request.id
     });
   });
