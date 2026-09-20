@@ -15,6 +15,7 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL e obrigatoria"),
   DATABASE_SSL: booleanFromString.default(true),
   DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
+  SESSION_TTL_HOURS: z.coerce.number().int().min(1).max(168).default(12),
   WORKER_NAME: z.string().min(1).default("worker-1"),
   WORKER_HEARTBEAT_SECONDS: z.coerce.number().int().min(5).default(15),
   WORKER_STALE_AFTER_SECONDS: z.coerce.number().int().min(15).default(60),
