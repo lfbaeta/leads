@@ -3,6 +3,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { env } from "../config/env.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerImportTemplateRoutes } from "./routes/import-template.js";
 
 type ErrorWithStatus = Error & {
   statusCode?: number;
@@ -52,6 +53,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   await registerHealthRoutes(app);
+  await registerImportTemplateRoutes(app);
 
   app.setErrorHandler((error, request, reply) => {
     const normalizedError = normalizeError(error);
