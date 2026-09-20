@@ -5,7 +5,8 @@ import { requireAuth,requireRole } from "../../auth/http.js";
 import { db } from "../../db/pool.js";
 import { encryptSecret,decryptSecret } from "../../security/secrets.js";
 import { whatsappProviderFactory,type WhatsAppProviderName } from "../../providers/factory.js";
-import { persistNormalizedEvent,verifyWebhookSecret } from "../../whatsapp/webhook-service.js";
+import { persistNormalizedEvent } from "../../whatsapp/webhook-service.js";
+import { verifyWebhookSecret } from "../../whatsapp/webhook-auth.js";
 
 const createSchema=z.object({name:z.string().min(1).max(120),provider:z.enum(["EVOLUTION_API","EVOLUTION_GO"]),baseUrl:z.string().url(),apiKey:z.string().min(1).max(2000),instanceName:z.string().min(1).max(200),webhookSecret:z.string().min(16).max(500)});
 const idSchema=z.object({id:z.string().uuid()});
