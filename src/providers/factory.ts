@@ -1,3 +1,4 @@
+import { EvolutionProvider } from "./evolution.js";
 import type { WhatsAppProvider } from "./contracts.js";
 
 export type WhatsAppProviderName = "EVOLUTION_API" | "EVOLUTION_GO";
@@ -8,9 +9,11 @@ export type WhatsAppProviderConfig = {
   instanceExternalId: string;
 };
 
-export interface WhatsAppProviderFactory {
-  create(name: WhatsAppProviderName, config: WhatsAppProviderConfig): WhatsAppProvider;
-}
+export interface WhatsAppProviderFactory { create(name: WhatsAppProviderName, config: WhatsAppProviderConfig): WhatsAppProvider; }
+
+export const whatsappProviderFactory:WhatsAppProviderFactory={
+  create(name,config){return new EvolutionProvider(name,config);}
+};
 
 export function assertSafeProviderUrl(raw:string):URL{
   const url=new URL(raw);
