@@ -100,7 +100,9 @@ describe("importacao de planilha", () => {
       total: 3,
       valid: 1,
       duplicate: 1,
-      invalid: 1
+      invalid: 1,
+      existing: 0,
+      optOut: 0
     });
 
     expect(result.rows[0]?.lead.phoneNormalized).toBe("5513991424545");
@@ -127,6 +129,25 @@ describe("importacao de planilha", () => {
     expect(parsed.sheetName).toBe("Empresas");
     expect(parsed.headers).toEqual([...EMPRESAS_TEMPLATE_HEADERS]);
     expect(parsed.totalRows).toBe(1);
+  });
+
+  it("le csv usando a mesma camada de importacao", () => {
+    const csv = [
+      "Nome,Endereço,Telefone",
+      "Empresa A,\"Rua A - Cananéia SP\",+55 13 99142-4545"
+    ].join("\n");
+
+    const parsed = parseSpreadsheetBuffer(
+      Buffer.from(csv, "utf8"),
+      "empresas.csv"
+    );
+
+    expect(parsed.totalRows).toBe(1);
+    expect(parsed.headers.slice(0, 3)).toEqual([
+      "Nome",
+      "Endereço",
+      "Telefone"
+    ]);
   });
 
   it("gera modelo xlsx compativel com o proprio importador", () => {
