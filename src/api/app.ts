@@ -4,6 +4,8 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { env } from "../config/env.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerImportRoutes } from "./routes/imports.js";
+import { registerLeadRoutes } from "./routes/leads.js";
 import { registerImportTemplateRoutes } from "./routes/import-template.js";
 
 type ErrorWithStatus = Error & {
@@ -56,6 +58,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerHealthRoutes(app);
   await registerImportTemplateRoutes(app);
   await registerAuthRoutes(app);
+  await registerImportRoutes(app);
+  await registerLeadRoutes(app);
 
   app.setErrorHandler((error, request, reply) => {
     const normalizedError = normalizeError(error);
