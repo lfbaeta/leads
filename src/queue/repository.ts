@@ -40,6 +40,14 @@ export async function claimNextMessageJob(
       FROM message_jobs
       WHERE status IN ('PENDING', 'SCHEDULED')
         AND available_at <= now()
+        AND (
+          campaign_id IS NULL OR EXISTS (
+            SELECT 1 FROM campaigns c
+            WHERE c.id = message_jobs.campaign_id
+              AND c.organization_id = message_jobs.organization_id
+              AND c.status = 'RUNNING'
+          )
+        )
         AND job_type = ANY($1::text[])
         AND attempts < max_attempts
       ORDER BY available_at ASC, created_at ASC
