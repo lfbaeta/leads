@@ -1,33 +1,155 @@
-# Leads
+# Leads CRM
 
-Projeto para um CRM simples, robusto e independente do banco de dados do Lovable.
+CRM de prospeccao e atendimento com arquitetura independente do Lovable.
 
-## Objetivo
+## Estado atual
 
-Centralizar leads, importar agendas/planilhas, organizar contatos e permitir automações de mensagens com processamento no servidor, inclusive quando a página estiver fechada.
+**Fase 01 — Fundacao, banco externo e backend: em validacao.**
 
-## Diretrizes principais
+O Supabase e o PostgreSQL escolhido para o projeto, mas o nucleo usa `DATABASE_URL` e SQL PostgreSQL comum. O frontend/Lovable nao acessa o banco diretamente.
 
-- Frontend pode ser criado/gerenciado com Lovable.
-- Banco de dados deve ficar fora do Lovable e sob controle do proprietário do projeto.
-- Nenhuma chave secreta deve ficar no frontend ou no GitHub.
-- Envios agendados devem rodar no backend/worker, não no navegador.
-- Histórico e status dos leads devem ser persistidos no banco.
-- Estrutura preparada para evolução por módulos.
+Recursos reais de WhatsApp e IA ainda nao estao habilitados. Eles serao implementados nas fases proprias, sem mocks permanentes.
 
-## Módulos previstos
+## Arquitetura
 
-1. Dashboard
-2. Leads
-3. Importação de agenda/planilha
-4. Fila de mensagens
-5. Enviando
-6. Enviados
-7. Filtros e segmentação
-8. Inteligência Artificial
-9. Configurações
-10. Auditoria e logs
+```
+Frontend React / Lovable
+          |
+          v
+      API Fastify
+          |
+          +------ PostgreSQL / Supabase
+          |
+          +------ Worker independente
+          |
+          +------ WhatsAppProvider (proxima fase)
+          +------ AIProvider       (proxima fase)
+          +------ StorageProvider  (proxima fase)
+```
 
-## Status
+### Regra critica
 
-Base inicial criada. A implementação funcional será feita em etapas para reduzir risco de erros.
+Disparos programados pertencem ao backend/worker. Fechar navegador, Lovable ou computador do operador nao pode interromper a fila.
+
+## Estrutura
+
+- `src/api` — API HTTP.
+- `src/config` — ambiente validado.
+- `src/db` — conexao PostgreSQL.
+- `src/domain` — regras reutilizaveis.
+- `src/providers` — contratos desacoplados.
+- `src/queue` — fila persistente.
+- `src/worker` — processo em background.
+- `db/migrations` — schema versionado.
+- `scripts` — utilitarios administrativos.
+- `tests` — testes automatizados.
+- `docs` — documentacao tecnica.
+
+## Banco
+
+As migrations iniciais criam estruturas para:
+
+- organizacoes e usuarios;
+- instancias;
+- leads e tags;
+- campanhas;
+- conversas;
+- mensagens e anexos;
+- fila persistente;
+- webhooks idempotentes;
+- importacoes;
+- IA/prompts/arquivos;
+- opt-out;
+- configuracoes;
+- auditoria;
+- heartbeat do worker.
+
+O telefone normalizado e protegido por unicidade dentro de cada organizacao. Jobs usam `idempotency_key` unica.
+
+## Configuracao local
+
+Requer Node.js 20 ou superior.
+
+```bash
+npm install
+cp .env.example .env
+```
+
+Preencha no `.env` pelo menos:
+
+```env
+DATABASE_URL=postgresql://...
+DATABASE_SSL=true
+```
+
+Nunca envie o `.env` ao GitHub.
+
+## Banco / migrations
+
+```bash
+npm run db:migrate
+```
+
+Veja `docs/SUPABASE.md`.
+
+## Desenvolvimento
+
+API:
+
+```bash
+npm run dev:api
+```
+
+Worker:
+
+```bash
+npm run dev:worker
+```
+
+## Validacao
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+O mesmo conjunto roda automaticamente no GitHub Actions.
+
+## Health check
+
+```
+GET /health
+```
+
+Retorna o estado da API, banco e worker. IA, WhatsApp e storage permanecem `NOT_CONFIGURED` ate suas respectivas fases.
+
+## Seguranca
+
+- nenhum segredo real versionado;
+- RLS habilitado nas tabelas da aplicacao;
+- frontend sem acesso direto ao banco nesta fase;
+- logs preparados para ocultar campos sensiveis;
+- rate limit e CORS no backend;
+- opt-out estruturado no banco;
+- fila com locks transacionais;
+- webhooks com protecao estrutural de duplicidade;
+- `DRY_RUN=true` por padrao.
+
+## Documentacao
+
+- `docs/ARQUITETURA.md`
+- `docs/SUPABASE.md`
+- `docs/FASE-01-FUNDACAO.md`
+
+## Proximas fases
+
+1. concluir conexao real com o Supabase e aplicar migrations;
+2. autenticacao e autorizacao;
+3. importacao de agenda/planilha;
+4. campanhas e fila de disparos;
+5. IA conversacional;
+6. conversas/chat;
+7. Evolution API + Evolution Go;
+8. painel/configuracoes e revisao geral.
