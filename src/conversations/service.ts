@@ -1,7 +1,7 @@
 import { db } from "../db/pool.js";
 
 export async function listConversations(input:{
-  organizationId:string;search?:string;mode?:string;state?:string;page:number;pageSize:number;
+  organizationId:string;search?:string | undefined;mode?:string | undefined;state?:string | undefined;page:number;pageSize:number;
 }) {
   const offset=(input.page-1)*input.pageSize;
   const values:unknown[]=[input.organizationId];
@@ -42,7 +42,7 @@ export async function getConversation(organizationId:string,id:string){
   return result.rows[0]??null;
 }
 
-export async function listMessages(input:{organizationId:string;conversationId:string;before?:string;limit:number}){
+export async function listMessages(input:{organizationId:string;conversationId:string;before?:string | undefined;limit:number}){
   const exists=await db.query("SELECT 1 FROM conversations WHERE id=$1 AND organization_id=$2",[input.conversationId,input.organizationId]);
   if(!exists.rows[0]) throw Object.assign(new Error("Conversa não encontrada."),{statusCode:404});
   const values:unknown[]=[input.organizationId,input.conversationId];
