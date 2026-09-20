@@ -1,18 +1,7 @@
-import { createHash,timingSafeEqual } from "node:crypto";
 import { db } from "../db/pool.js";
 import { normalizeBrazilPhone } from "../domain/phone.js";
 import type { NormalizedWhatsAppEvent } from "../providers/contracts.js";
 import { registerInboundForAI } from "../ai/service.js";
-
-function hashSecret(value:string){return createHash("sha256").update(value).digest();}
-
-export function verifyWebhookSecret(provided:string|undefined,storedHash:string|null):boolean{
-  if(!storedHash||!provided) return false;
-  const a=hashSecret(provided);
-  let b:Buffer;
-  try{b=Buffer.from(storedHash,"hex");}catch{return false;}
-  return a.length===b.length&&timingSafeEqual(a,b);
-}
 
 export async function persistNormalizedEvent(input:{
   organizationId:string;instanceId:string;event:NormalizedWhatsAppEvent;
