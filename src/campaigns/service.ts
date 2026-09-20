@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import { db } from "../db/pool.js";
+
 
 export type CampaignStatus =
   | "DRAFT"
@@ -121,6 +121,7 @@ export async function createCampaign(input: {
   fixedIntervalSeconds?: number | null | undefined;
   leadIds: string[];
 }) {
+  const { db } = await import("../db/pool.js");
   const client = await db.connect();
   try {
     await client.query("BEGIN");
@@ -209,6 +210,7 @@ export async function scheduleCampaign(input: {
   campaignId: string;
   userId: string;
 }) {
+  const { db } = await import("../db/pool.js");
   const client = await db.connect();
   try {
     await client.query("BEGIN");
@@ -349,6 +351,7 @@ export async function setCampaignStatus(input:{
   organizationId:string; campaignId:string; userId:string;
   action:"pause"|"resume"|"cancel";
 }) {
+  const { db } = await import("../db/pool.js");
   const client=await db.connect();
   try {
     await client.query("BEGIN");
@@ -384,6 +387,7 @@ export async function setCampaignStatus(input:{
 }
 
 export async function listCampaigns(organizationId:string){
+  const { db } = await import("../db/pool.js");
   const result=await db.query(
     `SELECT id,name,description,status,starts_at,timezone,target_count,
       processed_count,responded_count,interested_count,error_count,
