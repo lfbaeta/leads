@@ -41,12 +41,22 @@ export function parseSpreadsheetBuffer(
     throw new Error("Formato não suportado. Use .xlsx, .xls ou .csv.");
   }
 
-  const workbook = XLSX.read(buffer, {
-    type: "buffer",
-    cellDates: true,
-    dense: true,
-    sheetRows: IMPORT_MAX_ROWS + 2
-  });
+  const workbook = extension === ".csv"
+    ? XLSX.read(
+        buffer.toString("utf8").replace(/^\uFEFF/, ""),
+        {
+          type: "string",
+          cellDates: true,
+          dense: true,
+          sheetRows: IMPORT_MAX_ROWS + 2
+        }
+      )
+    : XLSX.read(buffer, {
+        type: "buffer",
+        cellDates: true,
+        dense: true,
+        sheetRows: IMPORT_MAX_ROWS + 2
+      });
 
   const sheetName = workbook.SheetNames[0];
   if (!sheetName) {
