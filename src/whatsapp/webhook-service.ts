@@ -40,8 +40,8 @@ export async function persistNormalizedEvent(input:{
       await client.query("COMMIT"); return {duplicate:false,handled:false};
     }
     const conversation=await client.query<{id:string}>(
-      `INSERT INTO conversations (organization_id,lead_id,instance_id,state,mode)
-       VALUES ($1,$2,$3,'QUALIFYING','AI')
+      `INSERT INTO conversations (organization_id,lead_id,instance_id,state,mode,unread_count,last_message_at)
+       VALUES ($1,$2,$3,'QUALIFYING','AI',1,now())
        ON CONFLICT (organization_id,lead_id)
        DO UPDATE SET instance_id=EXCLUDED.instance_id,last_message_at=now(),unread_count=conversations.unread_count+1
        RETURNING id`,
@@ -58,7 +58,8 @@ export async function persistNormalizedEvent(input:{
       [input.organizationId,conversation.rows[0]!.id,lead.rows[0].id,input.instanceId,text,
        input.event.externalMessageId??null,JSON.stringify({externalEventId:input.event.externalEventId})]
     );
-    await client.query("UPDATE leads SET last_reply_at=now() WHERE id=$1",[lead.rows[0].id]);
+    await client.query("UPDATE leads SET last_reply_at=now(),last_response_at=now() WHERE id=$1",[lead.rows[0].id]);
+    await client.query("UPDATE campaign_leads SET status='RESPONDED',responded_at=COALESCE(responded_at,now()) WHERE organization_id=$1 AND lead_id=$2 AND status='WAITING_REPLY'",[input.organizationId,lead.rows[0].id]);
     await client.query("UPDATE webhook_events SET processed_at=now() WHERE id=$1",[inserted.rows[0].id]);
     await client.query("COMMIT");
 
