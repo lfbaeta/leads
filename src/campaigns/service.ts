@@ -58,7 +58,9 @@ function minutesInTimezone(date: Date, timezone: string): number {
 
 function parseTime(value: string | null): number | null {
   if (!value) return null;
-  const [h, m] = value.split(":").map(Number);
+  const parts = value.split(":");
+  const h = Number(parts[0]);
+  const m = Number(parts[1]);
   if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
   return h * 60 + m;
 }
