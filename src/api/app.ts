@@ -5,6 +5,7 @@ import { env } from "../config/env.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerAIRoutes } from "./routes/ai.js";
 import { registerCampaignRoutes } from "./routes/campaigns.js";
+import { registerConversationRoutes } from "./routes/conversations.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerImportRoutes } from "./routes/imports.js";
 import { registerLeadRoutes } from "./routes/leads.js";
@@ -62,6 +63,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerAuthRoutes(app);
   await registerAIRoutes(app);
   await registerCampaignRoutes(app);
+  await registerConversationRoutes(app);
   await registerImportRoutes(app);
   await registerLeadRoutes(app);
 
