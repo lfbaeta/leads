@@ -7,6 +7,7 @@ import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAIRoutes } from "./routes/ai.js";
 import { registerCampaignRoutes } from "./routes/campaigns.js";
 import { registerConversationRoutes } from "./routes/conversations.js";
+import { registerFrontendRoutes } from "./routes/frontend.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerImportRoutes } from "./routes/imports.js";
 import { registerLeadRoutes } from "./routes/leads.js";
@@ -60,6 +61,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     timeWindow: "1 minute"
   });
 
+  await registerFrontendRoutes(app);
   await registerHealthRoutes(app);
   await registerImportTemplateRoutes(app);
   await registerAuthRoutes(app);
