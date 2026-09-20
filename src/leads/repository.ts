@@ -13,9 +13,9 @@ export type LeadStatus =
   | "ARCHIVED";
 
 export type LeadListFilters = {
-  search?: string;
-  status?: LeadStatus;
-  city?: string;
+  search?: string | undefined;
+  status?: LeadStatus | undefined;
+  city?: string | undefined;
   page: number;
   pageSize: number;
 };
@@ -106,13 +106,13 @@ export async function createLead(input: {
   name: string;
   phoneOriginal: string;
   phoneNormalized: string;
-  company?: string | null;
-  address?: string | null;
-  email?: string | null;
-  website?: string | null;
-  city?: string | null;
-  source?: string | null;
-  notes?: string | null;
+  company?: string | null | undefined;
+  address?: string | null | undefined;
+  email?: string | null | undefined;
+  website?: string | null | undefined;
+  city?: string | null | undefined;
+  source?: string | null | undefined;
+  notes?: string | null | undefined;
   userId: string;
 }) {
   const client = await db.connect();
@@ -176,15 +176,15 @@ export async function updateLead(input: {
   organizationId: string;
   leadId: string;
   userId: string;
-  name?: string;
-  company?: string | null;
-  address?: string | null;
-  email?: string | null;
-  website?: string | null;
-  city?: string | null;
-  source?: string | null;
-  notes?: string | null;
-  status?: LeadStatus;
+  name?: string | undefined;
+  company?: string | null | undefined;
+  address?: string | null | undefined;
+  email?: string | null | undefined;
+  website?: string | null | undefined;
+  city?: string | null | undefined;
+  source?: string | null | undefined;
+  notes?: string | null | undefined;
+  status?: LeadStatus | undefined;
 }) {
   const fields: string[] = [];
   const values: unknown[] = [input.organizationId, input.leadId];
