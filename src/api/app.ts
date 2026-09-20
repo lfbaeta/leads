@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { env } from "../config/env.js";
+import { registerAuthRoutes } from "./routes/auth.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerImportTemplateRoutes } from "./routes/import-template.js";
 
@@ -54,6 +55,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await registerHealthRoutes(app);
   await registerImportTemplateRoutes(app);
+  await registerAuthRoutes(app);
 
   app.setErrorHandler((error, request, reply) => {
     const normalizedError = normalizeError(error);

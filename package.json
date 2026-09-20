@@ -1,6 +1,6 @@
 {
   "name": "leads-crm",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "CRM de leads com backend e worker independentes do Lovable.",
@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "bootstrap:admin": "tsx scripts/bootstrap-admin.ts"
   },
   "engines": {
     "node": ">=20"
