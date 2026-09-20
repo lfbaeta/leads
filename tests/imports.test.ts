@@ -6,7 +6,10 @@ import {
   extractBrazilianCity
 } from "../src/imports/analyzer.js";
 import { EMPRESAS_TEMPLATE_HEADERS } from "../src/imports/profile.js";
-import { parseSpreadsheetBuffer } from "../src/imports/spreadsheet.js";
+import {
+  parseSpreadsheetBuffer,
+  type ParsedSpreadsheet
+} from "../src/imports/spreadsheet.js";
 import { buildImportTemplateBuffer } from "../src/imports/template.js";
 
 describe("importacao de planilha", () => {
@@ -38,7 +41,7 @@ describe("importacao de planilha", () => {
   });
 
   it("classifica valido duplicado e sem telefone", () => {
-    const spreadsheet = {
+    const spreadsheet: ParsedSpreadsheet = {
       sheetName: "Empresas",
       headers: [...EMPRESAS_TEMPLATE_HEADERS],
       totalRows: 3,
@@ -89,12 +92,9 @@ describe("importacao de planilha", () => {
           "23:11:04"
         ]
       ]
-    } as const;
+    };
 
-    const result = analyzeSpreadsheetImport({
-      ...spreadsheet,
-      rows: spreadsheet.rows.map((row) => [...row])
-    });
+    const result = analyzeSpreadsheetImport(spreadsheet);
 
     expect(result.counts).toEqual({
       total: 3,
