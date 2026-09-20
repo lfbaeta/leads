@@ -46,9 +46,10 @@ export async function registerImportRoutes(app: FastifyInstance): Promise<void> 
 
       const buffer = decodeBase64(parsed.data.contentBase64);
       const spreadsheet = parseSpreadsheetBuffer(buffer, parsed.data.fileName);
-      let analysis = analyzeSpreadsheetImport(spreadsheet, {
-        source: parsed.data.source
-      });
+      let analysis = analyzeSpreadsheetImport(
+        spreadsheet,
+        parsed.data.source ? { source: parsed.data.source } : undefined
+      );
       analysis = await enrichImportAnalysisFromDatabase(auth.organizationId, analysis);
 
       const importJobId = await persistImportPreview({
