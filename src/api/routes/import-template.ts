@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { requireAuth } from "../../auth/http.js";
 import {
   buildImportTemplateBuffer,
   IMPORT_TEMPLATE_FILENAME
@@ -7,7 +8,8 @@ import {
 export async function registerImportTemplateRoutes(
   app: FastifyInstance
 ): Promise<void> {
-  app.get("/imports/template", async (_request, reply) => {
+  app.get("/imports/template", async (request, reply) => {
+    await requireAuth(request);
     const file = buildImportTemplateBuffer();
 
     return reply
@@ -19,7 +21,7 @@ export async function registerImportTemplateRoutes(
         "content-disposition",
         `attachment; filename="${IMPORT_TEMPLATE_FILENAME}"`
       )
-      .header("cache-control", "public, max-age=3600")
+      .header("cache-control", "private, max-age=3600")
       .send(file);
   });
 }
