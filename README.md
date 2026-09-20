@@ -4,11 +4,11 @@ CRM de prospeccao e atendimento com arquitetura independente do Lovable.
 
 ## Estado atual
 
-**Fase 01 — Fundacao, banco externo e backend: em validacao.**
+**Fases estruturais 01–09 implementadas no backend. Ativação de providers externos exige configuração e teste controlado.**
 
 O Supabase e o PostgreSQL escolhido para o projeto, mas o nucleo usa `DATABASE_URL` e SQL PostgreSQL comum. O frontend/Lovable nao acessa o banco diretamente.
 
-Recursos reais de WhatsApp e IA ainda nao estao habilitados. Eles serao implementados nas fases proprias, sem mocks permanentes.
+WhatsApp possui adapter/worker e webhooks; IA possui regras e contrato de provider. Credenciais e providers reais permanecem desativados até configuração segura.
 
 ## Arquitetura
 
@@ -22,9 +22,9 @@ Frontend React / Lovable
           |
           +------ Worker independente
           |
-          +------ WhatsAppProvider (proxima fase)
-          +------ AIProvider       (proxima fase)
-          +------ StorageProvider  (proxima fase)
+          +------ WhatsAppProvider (Evolution API / Go)
+          +------ AIProvider       (desacoplado)
+          +------ StorageProvider  (desacoplado)
 ```
 
 ### Regra critica
@@ -143,13 +143,6 @@ Retorna o estado da API, banco e worker. IA, WhatsApp e storage permanecem `NOT_
 - `docs/SUPABASE.md`
 - `docs/FASE-01-FUNDACAO.md`
 
-## Proximas fases
+## Produção
 
-1. concluir conexao real com o Supabase e aplicar migrations;
-2. autenticacao e autorizacao;
-3. importacao de agenda/planilha;
-4. campanhas e fila de disparos;
-5. IA conversacional;
-6. conversas/chat;
-7. Evolution API + Evolution Go;
-8. painel/configuracoes e revisao geral.
+Consulte `docs/FASE-09-REVISAO-FINAL.md`. O projeto deve manter API e worker hospedados continuamente. `DRY_RUN=true` permanece o padrão seguro até o teste real do WhatsApp.
