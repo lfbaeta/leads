@@ -6,38 +6,49 @@ import {
 } from "./profile.js";
 import type { ParsedSpreadsheet, SpreadsheetCell } from "./spreadsheet.js";
 
-export type ImportRowStatus = "VALID" | "DUPLICATE" | "INVALID";
+export type ImportRowStatus =
+  | "VALID"
+  | "DUPLICATE"
+  | "INVALID"
+  | "EXISTING"
+  | "OPT_OUT";
+
+export type ImportLeadData = {
+  name: string | null;
+  company: string | null;
+  phoneOriginal: string | null;
+  phoneNormalized: string | null;
+  address: string | null;
+  email: string | null;
+  website: string | null;
+  city: string | null;
+  source: string;
+  notes: string | null;
+  customFields: Record<string, SpreadsheetCell>;
+};
 
 export type ImportPreviewRow = {
   rowNumber: number;
   status: ImportRowStatus;
   errors: string[];
   rawData: Record<string, SpreadsheetCell>;
-  lead: {
-    name: string | null;
-    company: string | null;
-    phoneOriginal: string | null;
-    phoneNormalized: string | null;
-    address: string | null;
-    email: string | null;
-    website: string | null;
-    city: string | null;
-    source: string;
-    notes: string | null;
-    customFields: Record<string, SpreadsheetCell>;
-  };
+  lead: ImportLeadData;
+};
+
+export type ImportCounts = {
+  total: number;
+  valid: number;
+  duplicate: number;
+  invalid: number;
+  existing: number;
+  optOut: number;
 };
 
 export type ImportAnalysis = {
   sheetName: string;
   headers: string[];
   mapping: ColumnMapping;
-  counts: {
-    total: number;
-    valid: number;
-    duplicate: number;
-    invalid: number;
-  };
+  counts: ImportCounts;
   rows: ImportPreviewRow[];
 };
 
@@ -52,8 +63,10 @@ function canonicalize(value: string): string {
 }
 
 function isPlaceholder(value: string): boolean {
+  const raw = value.trim().toLowerCase();
   const canonical = canonicalize(value).replace(/_/g, " ");
-  return IMPORT_PLACEHOLDERS.has(value.trim().toLowerCase())
+
+  return IMPORT_PLACEHOLDERS.has(raw)
     || IMPORT_PLACEHOLDERS.has(canonical);
 }
 
@@ -98,13 +111,12 @@ export function detectEmpresasMapping(headers: string[]): ColumnMapping {
   }
 
   const cityHeader = headers.find((header) =>
-    ["cidade", "municipio", "município"].includes(canonicalize(header).replace(/_/g, " "))
+    ["cidade", "municipio"].includes(canonicalize(header))
   );
   if (cityHeader) mapping.city = cityHeader;
 
   const notesHeader = headers.find((header) =>
-    ["observacao", "observações", "observacoes", "nota", "notas"]
-      .map(canonicalize)
+    ["observacao", "observacoes", "nota", "notas"]
       .includes(canonicalize(header))
   );
   if (notesHeader) mapping.notes = notesHeader;
@@ -124,6 +136,17 @@ function coreMappedHeaders(mapping: ColumnMapping): Set<string> {
   return new Set(
     Object.values(mapping).filter((value): value is string => typeof value === "string")
   );
+}
+
+export function countImportRows(rows: ImportPreviewRow[]): ImportCounts {
+  return {
+    total: rows.length,
+    valid: rows.filter((row) => row.status === "VALID").length,
+    duplicate: rows.filter((row) => row.status === "DUPLICATE").length,
+    invalid: rows.filter((row) => row.status === "INVALID").length,
+    existing: rows.filter((row) => row.status === "EXISTING").length,
+    optOut: rows.filter((row) => row.status === "OPT_OUT").length
+  };
 }
 
 export function analyzeSpreadsheetImport(
@@ -213,12 +236,7 @@ export function analyzeSpreadsheetImport(
     sheetName: spreadsheet.sheetName,
     headers: spreadsheet.headers,
     mapping,
-    counts: {
-      total: rows.length,
-      valid: rows.filter((row) => row.status === "VALID").length,
-      duplicate: rows.filter((row) => row.status === "DUPLICATE").length,
-      invalid: rows.filter((row) => row.status === "INVALID").length
-    },
+    counts: countImportRows(rows),
     rows
   };
 }
