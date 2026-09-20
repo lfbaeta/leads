@@ -9,6 +9,7 @@ import { registerConversationRoutes } from "./routes/conversations.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerImportRoutes } from "./routes/imports.js";
 import { registerLeadRoutes } from "./routes/leads.js";
+import { registerWhatsAppRoutes } from "./routes/whatsapp.js";
 import { registerImportTemplateRoutes } from "./routes/import-template.js";
 
 type ErrorWithStatus = Error & {
@@ -66,6 +67,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerConversationRoutes(app);
   await registerImportRoutes(app);
   await registerLeadRoutes(app);
+  await registerWhatsAppRoutes(app);
 
   app.setErrorHandler((error, request, reply) => {
     const normalizedError = normalizeError(error);
