@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Leads CRM — Login</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #b91c1c;
+      --success: #047857;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(37, 99, 235, .10), transparent 32rem),
+        linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
+    }
+    .hero {
+      padding: clamp(36px, 7vw, 96px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: #0f172a;
+      color: #fff;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      right: -120px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, .25);
+      filter: blur(6px);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      font-size: 22px;
+      margin-bottom: 48px;
+      z-index: 1;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #60a5fa, #2563eb);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, .35);
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 640px;
+      font-size: clamp(38px, 5vw, 68px);
+      line-height: 1.02;
+      letter-spacing: -.045em;
+      z-index: 1;
+    }
+    .hero p {
+      margin: 24px 0 0;
+      max-width: 620px;
+      color: #cbd5e1;
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.6;
+      z-index: 1;
+    }
+    .features {
+      margin-top: 42px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      z-index: 1;
+    }
+    .pill {
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(255,255,255,.06);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .login-side {
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+    .card {
+      width: min(100%, 430px);
+      background: var(--card);
+      border: 1px solid rgba(226,232,240,.9);
+      border-radius: 24px;
+      padding: clamp(28px, 4vw, 42px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .11);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -.025em;
+    }
+    .subtitle {
+      margin: 0 0 30px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    label {
+      display: block;
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .field { margin-bottom: 18px; }
+    .input-wrap { position: relative; }
+    input {
+      width: 100%;
+      height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 14px;
+      outline: none;
+      font: inherit;
+      background: #fff;
+      transition: border .15s, box-shadow .15s;
+    }
+    input:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+    }
+    .password-input { padding-right: 52px; }
+    .toggle-password {
+      position: absolute;
+      right: 8px;
+      top: 7px;
+      height: 36px;
+      min-width: 38px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .remember {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      margin: 2px 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .remember input { width: 16px; height: 16px; }
+    .btn {
+      width: 100%;
+      min-height: 50px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background .15s, transform .05s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .65; cursor: wait; }
+    .message {
+      display: none;
+      margin: 18px 0 0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .message.error { display: block; color: var(--danger); background: #fef2f2; border: 1px solid #fecaca; }
+    .message.success { display: block; color: var(--success); background: #ecfdf5; border: 1px solid #a7f3d0; }
+    .secure {
+      margin-top: 22px;
+      color: #94a3b8;
+      font-size: 12px;
+      text-align: center;
+    }
+    .session {
+      display: none;
+    }
+    .session.active {
+      display: block;
+    }
+    .login-form.hidden {
+      display: none;
+    }
+    .user-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin: 24px 0;
+      background: #f8fafc;
+    }
+    .user-card strong { display: block; font-size: 17px; margin-bottom: 5px; }
+    .user-card span { color: var(--muted); font-size: 14px; }
+    .logout {
+      background: #0f172a;
+    }
+    .logout:hover { background: #1e293b; }
+    @media (max-width: 850px) {
+      .page { grid-template-columns: 1fr; }
+      .hero { min-height: 310px; padding: 38px 28px; }
+      .hero h1 { font-size: 40px; }
+      .hero p { font-size: 16px; }
+      .features { margin-top: 24px; }
+      .login-side { padding: 24px 18px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-label="Apresentação do CRM">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">L</span>
+        <span>Leads CRM</span>
+      </div>
+      <h1>Leads, campanhas e conversas em um só lugar.</h1>
+      <p>Gerencie sua operação comercial com segurança, fila persistente de envios e atendimento organizado.</p>
+      <div class="features" aria-label="Recursos">
+        <span class="pill">Leads</span>
+        <span class="pill">Campanhas</span>
+        <span class="pill">WhatsApp</span>
+        <span class="pill">Atendimento</span>
+        <span class="pill">IA</span>
+      </div>
+    </section>
+
+    <section class="login-side">
+      <div class="card">
+        <div id="loginArea" class="login-form">
+          <h2>Acessar o sistema</h2>
+          <p class="subtitle">Entre com seu e-mail e senha de administrador ou atendente.</p>
+
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required />
+            </div>
+
+            <div class="field">
+              <label for="password">Senha</label>
+              <div class="input-wrap">
+                <input id="password" class="password-input" name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha" required />
+                <button id="togglePassword" class="toggle-password" type="button" aria-label="Mostrar senha" title="Mostrar senha">◉</button>
+              </div>
+            </div>
+
+            <label class="remember">
+              <input id="remember" type="checkbox" />
+              Manter conectado neste dispositivo
+            </label>
+
+            <button id="submitButton" class="btn" type="submit">Entrar</button>
+            <div id="loginMessage" class="message" role="alert" aria-live="polite"></div>
+          </form>
+
+          <div class="secure">A senha é enviada somente para a API segura do CRM e não é gravada nesta página.</div>
+        </div>
+
+        <div id="sessionArea" class="session">
+          <h2>Bem-vindo</h2>
+          <p class="subtitle">Sua sessão está ativa.</p>
+          <div class="user-card">
+            <strong id="userName">Usuário</strong>
+            <span id="userDetails"></span>
+          </div>
+          <button id="logoutButton" class="btn logout" type="button">Sair</button>
+          <div id="sessionMessage" class="message" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const API_BASE_URL = (window.CRM_API_URL || (location.hostname === "localhost" ? "http://localhost:3001" : location.origin)).replace(/\/$/, "");
+      const STORAGE_KEY = "leads-crm-session";
+
+      const loginArea = document.getElementById("loginArea");
+      const sessionArea = document.getElementById("sessionArea");
+      const loginForm = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const rememberInput = document.getElementById("remember");
+      const submitButton = document.getElementById("submitButton");
+      const loginMessage = document.getElementById("loginMessage");
+      const togglePassword = document.getElementById("togglePassword");
+      const logoutButton = document.getElementById("logoutButton");
+      const userName = document.getElementById("userName");
+      const userDetails = document.getElementById("userDetails");
+      const sessionMessage = document.getElementById("sessionMessage");
+
+      function setMessage(element, text, type) {
+        element.textContent = text || "";
+        element.className = text ? "message " + type : "message";
+      }
+
+      function getStoredSession() {
+        const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        try { return JSON.parse(raw); } catch { return null; }
+      }
+
+      function storeSession(data, remember) {
+        const storage = remember ? localStorage : sessionStorage;
+        const other = remember ? sessionStorage : localStorage;
+        other.removeItem(STORAGE_KEY);
+        storage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      function clearSession() {
+        localStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+
+      function showSession(user) {
+        loginArea.classList.add("hidden");
+        sessionArea.classList.add("active");
+        userName.textContent = user.name || "Usuário";
+        userDetails.textContent = [user.email, user.role, user.organizationName].filter(Boolean).join(" • ");
+      }
+
+      function showLogin() {
+        sessionArea.classList.remove("active");
+        loginArea.classList.remove("hidden");
+        passwordInput.value = "";
+        setMessage(sessionMessage, "", "");
+      }
+
+      async function validateSession(saved) {
+        if (!saved?.token) return false;
+        try {
+          const response = await fetch(API_BASE_URL + "/auth/me", {
+            headers: { Authorization: "Bearer " + saved.token }
+          });
+          if (!response.ok) return false;
+          const data = await response.json();
+          showSession(data.user);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      togglePassword.addEventListener("click", () => {
+        const showing = passwordInput.type === "text";
+        passwordInput.type = showing ? "password" : "text";
+        togglePassword.setAttribute("aria-label", showing ? "Mostrar senha" : "Ocultar senha");
+        togglePassword.title = showing ? "Mostrar senha" : "Ocultar senha";
+      });
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setMessage(loginMessage, "", "");
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          setMessage(loginMessage, "Preencha o e-mail e a senha.", "error");
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Entrando...";
+
+        try {
+          const response = await fetch(API_BASE_URL + "/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data.error || "Não foi possível entrar.");
+          }
+
+          storeSession(data, rememberInput.checked);
+          showSession(data.user);
+          setMessage(sessionMessage, "Login realizado com sucesso.", "success");
+        } catch (error) {
+          const networkMessage = error instanceof TypeError
+            ? "Não foi possível conectar à API do CRM. Verifique se o servidor está online."
+            : (error.message || "Falha ao entrar.");
+          setMessage(loginMessage, networkMessage, "error");
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Entrar";
+        }
+      });
+
+      logoutButton.addEventListener("click", async () => {
+        const saved = getStoredSession();
+        try {
+          if (saved?.token) {
+            await fetch(API_BASE_URL + "/auth/logout", {
+              method: "POST",
+              headers: { Authorization: "Bearer " + saved.token }
+            });
+          }
+        } catch {
+          // A sessão local ainda será encerrada.
+        } finally {
+          clearSession();
+          showLogin();
+          setMessage(loginMessage, "Sessão encerrada.", "success");
+        }
+      });
+
+      (async () => {
+        const saved = getStoredSession();
+        if (!saved) return;
+        const valid = await validateSession(saved);
+        if (!valid) {
+          clearSession();
+          showLogin();
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
