@@ -53,8 +53,10 @@ export class EvolutionProvider implements WhatsAppProvider{
     const text=[message.conversation,(message.extendedTextMessage as Record<string,unknown>|undefined)?.text].find(v=>typeof v==="string") as string|undefined;
     const externalMessageId=typeof key.id==="string"?key.id:undefined;
     const eventRaw=typeof p.event==="string"?p.event:"UNKNOWN";
+    const fromMe=key.fromMe===true;
     const externalEventId=[eventRaw,externalMessageId??"",String(data.messageTimestamp??"")].join(":");
-    const event:NormalizedWhatsAppEvent={externalEventId,eventType:eventRaw.toLowerCase().includes("messages.upsert")||eventRaw.toLowerCase().includes("message")?"MESSAGE_RECEIVED":eventRaw,payload:{text:text??"",raw:p}};
+    const isInbound=!fromMe&&eventRaw.toLowerCase().includes("messages.upsert");
+    const event:NormalizedWhatsAppEvent={externalEventId,eventType:isInbound?"MESSAGE_RECEIVED":eventRaw,payload:{text:text??"",raw:p}};
     const phone=remote.split("@")[0]; if(phone) event.phone=phone; if(externalMessageId) event.externalMessageId=externalMessageId;
     return event;
   }
