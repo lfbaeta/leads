@@ -1,5 +1,7 @@
 import type { NormalizedWhatsAppEvent,OutboundMessageResult,ProviderConnectionStatus,WhatsAppProvider } from "./contracts.js";
-import { assertSafeProviderUrl,type WhatsAppProviderConfig } from "./factory.js";
+import type { WhatsAppProviderConfig } from "./factory.js";
+
+function safeUrl(raw:string):URL{const url=new URL(raw);if(!["https:","http:"].includes(url.protocol)||url.username||url.password) throw new Error("URL de provider inválida.");return url;}
 
 type Profile={sendTextPath:(i:string)=>string;statusPath:(i:string)=>string;qrPath:(i:string)=>string;authHeader:string};
 
@@ -11,7 +13,7 @@ const profiles:Record<"EVOLUTION_API"|"EVOLUTION_GO",Profile>={
 export class EvolutionProvider implements WhatsAppProvider{
   private readonly base:URL; private readonly p:Profile;
   constructor(private readonly name:"EVOLUTION_API"|"EVOLUTION_GO",private readonly config:WhatsAppProviderConfig){
-    this.base=assertSafeProviderUrl(config.baseUrl); this.p=profiles[name];
+    this.base=safeUrl(config.baseUrl); this.p=profiles[name];
   }
   private async request(path:string,init?:RequestInit):Promise<unknown>{
     const url=new URL(path,this.base);
